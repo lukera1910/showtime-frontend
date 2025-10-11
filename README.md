@@ -30,4 +30,21 @@ npm -v
 ---
 
 ## 🧩 Instalação e Configuração
-- 1. Clone o repositório
+1. Clone o repositório
+```bash
+git clone https://github.com/lukera1910/showtime-frontend.git
+```
+
+2. Acesse o repositório do projeto
+```bash
+cd showtime-frontend
+```
+
+3. Instale as dependências
+```bash
+npm install
+```
+ou
+```bash
+yarn install
+```
