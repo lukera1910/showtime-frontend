@@ -25,3 +25,9 @@ Verifique as versões:
 ```bash
 node -v
 npm -v
+```
+
+---
+
+## 🧩 Instalação e Configuração
+- 1. Clone o repositório
