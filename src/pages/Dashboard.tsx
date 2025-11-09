@@ -27,8 +27,8 @@ const Dashboard = () => {
 
     // buscar eventos
     const fetchEvents = async (query = "") => {
+        setLoading(true);
         try {
-            setLoading(true);
             const response = await api.get(`/events${query}`);
             setEvents(response.data.data || response.data); // suporta os dois formatos
         } catch {
@@ -79,11 +79,17 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-100">
             {/* Header */}
-            <header className="bg-indigo-600 text-white py-4 shadow-md sticky top-0 z-10">
+            <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 shadow-md sticky top-0 z-10">
                 <div className="max-w-6xl mx-auto flex justify-between items-center px-4">
-                    <h1 className="text-2xl font-bold tracking-wide">ShowTime</h1>
+                    <h1 className="text-2xl font-bold tracking-wide">ShowTime - Painel de Eventos</h1>
+                    <button
+                        onClick={() => setSelectedEvent({ id: 0, name: "", artist: "", location: "", date: "" })}
+                        className="bg-indigo-800 hover:bg-indigo-700 text-sm px-4 py-2 rounded-md font-medium transition-all"
+                    >
+                        + Novo evento
+                    </button>
                     <button
                         onClick={handleLogout}
                         className="bg-indigo-800 hover:bg-indigo-700 text-sm px-4 py-2 rounded-md font-medium transition-all"
@@ -103,29 +109,113 @@ const Dashboard = () => {
                         onClick={(e) => e.stopPropagation()}
                         className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden animate-fadeIn"
                     >
-                        <img
-                            src={`https://picsum.photos/800/400?random=${selectedEvent.id}`}
-                            alt={selectedEvent.name}
-                            className="w-full h-48 object-cover"
-                        />
                         <div className="p-6">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                                {selectedEvent.name}
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                {selectedEvent.id === 0 ? "Novo Evento" : selectedEvent.name}
                             </h2>
-                            <p className="text-gray-600 mb-1">
-                                <span className="font-semibold">Artista:</span> {selectedEvent.artist}
-                            </p>
-                            <p className="text-gray-600 mb-1">
-                                <span className="font-semibold">Local:</span> {selectedEvent.location}
-                            </p>
-                            <p className="text-gray-600 mb-4">
-                                <span className="font-semibold">Data:</span>{" "}
-                                {new Date(selectedEvent.date).toLocaleDateString("pt-BR")}
-                            </p>
+
+                            <form
+                                onSubmit={async (e) => {
+                                    e.preventDefault();
+                                    try {
+                                        if (selectedEvent.id === 0) {
+                                            // CREATE
+                                            await api.post("/events", {
+                                                name: selectedEvent.name,
+                                                artist: selectedEvent.artist,
+                                                location: selectedEvent.location,
+                                                date: selectedEvent.date,
+                                            });
+                                        } else {
+                                            // UPDATE
+                                            await api.put(`/events/${selectedEvent.id}`, {
+                                                name: selectedEvent.name,
+                                                artist: selectedEvent.artist,
+                                                location: selectedEvent.location,
+                                                date: selectedEvent.date,
+                                            });
+                                        }
+                                        fetchEvents(); // atualiza lista
+                                        setSelectedEvent(null);
+                                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                    } catch (err) {
+                                        alert("Erro ao salvar evento");
+                                    }
+                                }}
+                                className="flex flex-col gap-3"
+                            >
+                                <input
+                                    type="text"
+                                    placeholder="Nome do evento"
+                                    value={selectedEvent.name}
+                                    onChange={(e) =>
+                                        setSelectedEvent({ ...selectedEvent, name: e.target.value })
+                                    }
+                                    className="border rounded-lg px-3 py-2"
+                                    required
+                                />
+
+                                <input
+                                    type="text"
+                                    placeholder="Artista"
+                                    value={selectedEvent.artist}
+                                    onChange={(e) =>
+                                        setSelectedEvent({ ...selectedEvent, artist: e.target.value })
+                                    }
+                                    className="border rounded-lg px-3 py-2"
+                                    required
+                                />
+
+                                <input
+                                    type="text"
+                                    placeholder="Local"
+                                    value={selectedEvent.location}
+                                    onChange={(e) =>
+                                        setSelectedEvent({ ...selectedEvent, location: e.target.value })
+                                    }
+                                    className="border rounded-lg px-3 py-2"
+                                    required
+                                />
+
+                                <input
+                                    type="date"
+                                    value={selectedEvent.date}
+                                    onChange={(e) =>
+                                        setSelectedEvent({ ...selectedEvent, date: e.target.value })
+                                    }
+                                    className="border rounded-lg px-3 py-2"
+                                    required
+                                />
+
+                                <div className="flex justify-between mt-4">
+                                    {selectedEvent.id !== 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                if (confirm("Deseja realmente excluir este evento?")) {
+                                                    await api.delete(`/events/${selectedEvent.id}`);
+                                                    fetchEvents();
+                                                    setSelectedEvent(null);
+                                                }
+                                            }}
+                                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                                        >
+                                            Excluir
+                                        </button>
+                                    )}
+
+                                    <button
+                                        type="submit"
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium"
+                                    >
+                                        {selectedEvent.id === 0 ? "Criar" : "Salvar"}
+                                    </button>
+                                </div>
+                            </form>
 
                             <button
                                 onClick={() => setSelectedEvent(null)}
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium transition-all"
+                                className="text-gray-500 text-sm mt-4 hover:underline"
                             >
                                 Fechar
                             </button>
@@ -213,7 +303,9 @@ const Dashboard = () => {
 
                 {/* Conteúdo */}
                 {loading ? (
-                    <p className="text-center text-gray-500">Carregando eventos...</p>
+                    <div className="flex justify-center py-10">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    </div>
                 ) : error ? (
                     <p className="text-center text-red-500">{error}</p>
                 ) : events.length === 0 ? (
@@ -224,7 +316,7 @@ const Dashboard = () => {
                             <div
                                 key={event.id}
                                 onClick={() => setSelectedEvent(event)}
-                                className="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-transform hover:-translate-y-1 cursor-pointer"
+                                className="bg-white shadow-lg rounded-xl overflow-hidden animate-card cursor-pointer"
                             >
                                 <img
                                     src={`https://picsum.photos/800/400?random=${event.id}`}
@@ -245,6 +337,11 @@ const Dashboard = () => {
                         ))}
                     </div>
                 )}
+
+                <footer className="text-center text-sm text-gray-500 mt-10 pb-6">
+                © {new Date().getFullYear()} ShowTime — desenvolvido por Lucas Gabriel, Arthur Phelipe Mayer Santos, Andrey Kusman, Yang Souza e João Vitor Perry Tulio.
+                </footer>
+
             </main>
         </div>
     );

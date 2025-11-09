@@ -8,3 +8,12 @@
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-in-out;
 }
+
+@layer utilities {
+  .animate-card {
+    transition: all 0.25s ease-in-out;
+  }
+  .animate-card:hover {
+    transform: translateY(-4px) scale(1.02);
+  }
+}

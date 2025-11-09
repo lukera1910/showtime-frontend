@@ -32,18 +32,14 @@ const Login = () => {
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Acesse sua conta - Showtime
+                <img
+                    src="https://cdn-icons-png.flaticon.com/512/727/727245.png"
+                    alt="ShowTime logo"
+                    className="w-14 h-14 mx-auto"
+                />
+                <h2 className="mt-4 text-center text-3xl font-extrabold text-gray-900">
+                    Bem-vindo ao <span className="text-indigo-600">ShowTime</span>
                 </h2>
-                <p className="mt-2 text-center text-sm text-gray-600 max-w">
-                    ou{" "}
-                    <a
-                        href="/register"
-                        className="font-medium text-blue-600 hover:text-blue-500"
-                    >
-                        crie uma conta
-                    </a>
-                </p>
             </div>
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
